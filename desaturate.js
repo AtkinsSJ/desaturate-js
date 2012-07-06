@@ -58,7 +58,7 @@ javascript:(function(){
 	    var h, s, l = (max + min) / 2;
 
 	    if(max == min){
-	        h = s = 0; // achromatic
+	        h = s = 0; /* achromatic */
 	    }else{
 	        var d = max - min;
 	        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -95,7 +95,7 @@ javascript:(function(){
 			console.log("rgba", rgba, hsla);
 		}
 
-		hsla[1] = 0; // Desaturate
+		hsla[1] = 0; /* Desaturate */
 
 		return "hsla(" + hsla[0] + ", " + hsla[1] + "%, " + hsla[2] + "%, " + hsla[3] + ")";
 	};
@@ -116,7 +116,7 @@ javascript:(function(){
 			/* For each of the 'colorProperties', see if it's here */
 			for (var k=0; k<colorProperties.length; k++) {
 				if (rule.style[colorProperties[k]] !== "") {
-					// Add this rule to the thing!
+					/* Add this rule to the thing! */
 					toAdd[colorProperties[k]] = rule.style[colorProperties[k]];
 					toAddLength++;
 				}
@@ -143,7 +143,7 @@ javascript:(function(){
 	for (var i=0; i<(ss.length-1); i++) {
 		console.log(i, ss[i].href);
 
-		// If there are no style rules, skip this sheet
+		/* If there are no style rules, skip this sheet */
 		if (!ss[i].cssRules) {
 			console.log("No rules.");
 			continue;
