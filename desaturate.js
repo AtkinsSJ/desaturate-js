@@ -102,21 +102,19 @@ javascript:(function(){
 
 	var handleRules = function(cssRulesList) {
 		/* Iterate through style rules */
-		for (j=0; j<cssRulesList.length; j++) {
+		for (var j=0; j<cssRulesList.length; j++) {
 			var rule = cssRulesList[j],
 				toAdd = {},
 				toAddLength = 0;
 
 			/* If rule is a CSSMediaRule, we need to get its innards. */
 			if (rule.constructor.name == "CSSMediaRule") {
-				console.log("Recursing");
-				//handleRules(rule.cssRules);
-				// FIXME: Currently goes into an infinite loop if it recurses for @media rules.
+				handleRules(rule.cssRules);
 				continue;
 			}
 
 			/* For each of the 'colorProperties', see if it's here */
-			for (k=0; k<colorProperties.length; k++) {
+			for (var k=0; k<colorProperties.length; k++) {
 				if (rule.style[colorProperties[k]] !== "") {
 					// Add this rule to the thing!
 					toAdd[colorProperties[k]] = rule.style[colorProperties[k]];
@@ -141,11 +139,8 @@ javascript:(function(){
 	};
 
 	/* Iterate through document stylesheets */
-	var ss = document.styleSheets,
-		i =0,
-		j = 0,
-		k = 0;
-	for (i=0; i<(ss.length-1); i++) {
+	var ss = document.styleSheets;
+	for (var i=0; i<(ss.length-1); i++) {
 		console.log(i, ss[i].href);
 
 		// If there are no style rules, skip this sheet
