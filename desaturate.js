@@ -38,23 +38,66 @@ javascript:(function(){
 
 		return regexes;
 	};
-
 	var regexes = makeRegexes();
+
+	/**
+	 * Converts an RGB color value to HSL. Conversion formula
+	 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+	 * Assumes r, g, and b are contained in the set [0, 255] and
+	 * returns h, s, and l as expected for css.
+	 *
+	 * @param   Number  r       The red color value
+	 * @param   Number  g       The green color value
+	 * @param   Number  b       The blue color value
+	 * @param	Number	a 		The alpha value. Not used in calculation, just returned in result.
+	 * @return  Array           The HSL representation
+	 */
+	var rgbToHsl = function(r, g, b, a){
+	    r /= 255, g /= 255, b /= 255;
+	    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+	    var h, s, l = (max + min) / 2;
+
+	    if(max == min){
+	        h = s = 0; // achromatic
+	    }else{
+	        var d = max - min;
+	        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+	        switch(max){
+	            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+	            case g: h = (b - r) / d + 2; break;
+	            case b: h = (r - g) / d + 4; break;
+	        }
+	        h /= 6;
+	    }
+
+	    h *= 360;
+	    s *= 100;
+	    l *= 100;
+	    return [h, s, l, a];
+	};
 
 	/**
 	 * Convert color to HSL, with a saturation of 0%
 	 */
 	var desaturate = function(color, regexes) {
+		var hsla = [];
+
 		/* Figure-out what kind of color this is */
 		if (regexes.rgb.test(color)) {
 			/* rgb(255, 255, 255) */
-			console.log("rgb", regexes.rgb.exec(color));
+			var rgb = regexes.rgb.exec(color);
+			hsla = rgbToHsl(rgb[1], rgb[2], rgb[3], 1);
+			console.log("rgb", rgb, hsla);
 		} else if (regexes.rgba.test(color)) {
 			/* rgba(255, 255, 255, 0.5) */
-			console.log("rgba", regexes.rgba.exec(color));
+			var rgba = regexes.rgba.exec(color);
+			hsla = rgbToHsl(rgba[1], rgba[2], rgba[3], rgba[4]);
+			console.log("rgba", rgba, hsla);
 		}
 
-		return color;
+		hsla[1] = 0; // Desaturate
+
+		return "hsla(" + hsla[0] + ", " + hsla[1] + "%, " + hsla[2] + "%, " + hsla[3] + ")";
 	};
 
 	/* Iterate through document stylesheets */
