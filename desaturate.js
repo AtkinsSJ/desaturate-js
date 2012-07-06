@@ -25,7 +25,7 @@ javascript:(function(){
 		"outlineColor": "outline-color"
 	};
 
-	var makeRegexes = function() {
+	function makeRegexes() {
 		var hex = "[0-9a-f]",
 			rgb = "(\\d|[1-9]\\d|[12]\\d\\d)",
 			alpha = "[01]|0\\.\\d+";
@@ -52,7 +52,7 @@ javascript:(function(){
 	 * @param	Number	a 		The alpha value. Not used in calculation, just returned in result.
 	 * @return  Array           The HSL representation
 	 */
-	var rgbToHsl = function(r, g, b, a){
+	function rgbToHsl(r, g, b, a){
 	    r /= 255, g /= 255, b /= 255;
 	    var max = Math.max(r, g, b), min = Math.min(r, g, b);
 	    var h, s, l = (max + min) / 2;
@@ -79,7 +79,7 @@ javascript:(function(){
 	/**
 	 * Convert color to HSL, with a saturation of 0%
 	 */
-	var desaturate = function(color, regexes) {
+	function desaturate(color, regexes) {
 		var hsla = [];
 
 		/* Figure-out what kind of color this is */
@@ -98,9 +98,9 @@ javascript:(function(){
 		hsla[1] = 0; /* Desaturate */
 
 		return "hsla(" + hsla[0] + ", " + hsla[1] + "%, " + hsla[2] + "%, " + hsla[3] + ")";
-	};
+	}
 
-	var handleRules = function(cssRulesList) {
+	function handleRules(cssRulesList) {
 		/* Iterate through style rules */
 		for (var j=0; j<cssRulesList.length; j++) {
 			var rule = cssRulesList[j],
@@ -136,7 +136,7 @@ javascript:(function(){
 				styleElement.innerHTML += declaration;
 			}
 		}
-	};
+	}
 
 	/* Iterate through document stylesheets */
 	var ss = document.styleSheets;
