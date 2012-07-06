@@ -25,7 +25,22 @@ javascript:(function(){
 		"outlineColor": "outline-color"
 	};
 
-	var 
+	var regex = {
+		rgb: /rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/,
+		rgba: new RegExp(""),
+		hsl: new RegExp(""),
+		hsla: new RegExp(""),
+		hex3: new RegExp(""),
+		hex6: new RegExp(""),
+		initial: new RegExp("initial")
+	}; // If none are matched, assume a color keyword
+
+	/**
+	 * Convert color to HSL, with a saturation of 0%
+	 */
+	var desaturate = function(color) {
+
+	};
 
 	/* Iterate through document stylesheets */
 	var ss = document.styleSheets,
