@@ -4,6 +4,8 @@ javascript:(function(){
 	document.body.appendChild( styleElement );
 	var style = document.styleSheets[document.styleSheets.length-1];
 
+	var canvas = document.createElement('canvas');
+
 	/* These are the css properties we want to adjust */
 	var colorProperties = [
 		"backgroundColor",
@@ -100,6 +102,30 @@ javascript:(function(){
 		return "hsla(" + hsla[0] + ", " + hsla[1] + "%, " + hsla[2] + "%, " + hsla[3] + ")";
 	}
 
+	function desaturateImage(image) {
+		var ctx = canvas.getContext('2d');
+
+		/* Resize canvas and draw the image */
+		ctx.canvas.width = image.width;
+		ctx.canvas.height = image.height;
+		ctx.drawImage(image, 0, 0);
+
+		/* Get pixel data and desaturate it */
+		var pixels = ctx.getImageData(0, 0, image.width, image.height);
+		for (var i=0, n = pixels.data.length; i < n; i+=4) {
+			var intensity = 0.3 * pixels.data[i+0]
+							+ 0.59 * pixels.data[i+1]
+							+ 0.11 * pixels.data[i+2];
+			pixels.data[i+0] = intensity;
+			pixels.data[i+1] = intensity;
+			pixels.data[i+2] = intensity;
+		}
+		ctx.putImageData(pixels, 0, 0);
+
+		/* Save results in the original image */
+		image.src = ctx.canvas.toDataURL('image/png');
+	}
+
 	function handleRules(cssRulesList) {
 		/* Iterate through style rules */
 		for (var j=0; j<cssRulesList.length; j++) {
@@ -151,4 +177,14 @@ javascript:(function(){
 
 		handleRules(ss[i].cssRules);
 	}
+
+	/* Iterate through document images */
+	for (var i=0; i < document.images.length; i++) {
+		try {
+			desaturateImage(document.images[i]);
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
 })();
