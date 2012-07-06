@@ -1,10 +1,19 @@
 javascript:(function(){
+	/* Check for our style tag:
+		If desaturate.js has been run already, the <style> tag will exist.
+		In this case, delete it and reset the images.
+	*/
+	var styleElement = document.getElementById("_desaturate_js");
+	if (styleElement) {
+		styleElement.parentNode.removeChild(styleElement);
+		return;
+	}
+
 	/* Create our stylesheet object */
-	var styleElement = document.createElement('style');
+	styleElement = document.createElement('style');
+	styleElement.id = "_desaturate_js";
 	document.body.appendChild( styleElement );
 	var style = document.styleSheets[document.styleSheets.length-1];
-
-	var canvas = document.createElement('canvas');
 
 	/* These are the css properties we want to adjust */
 	var colorProperties = [
@@ -35,7 +44,8 @@ javascript:(function(){
 		var regexes = {
 			rgb: new RegExp("rgb\\(\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*\\)", "i" ),
 			rgba: new RegExp("rgba\\(\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*,\\s*" + alpha + "\\s*\\)", "i" ),
-			
+			hex6: new RegExp("#("+hex+hex+")("+hex+hex+")("+hex+hex+")", "i"),
+			hex3: new RegExp("#("+hex+")("+hex+")("+hex+")", "i")
 		};
 
 		return regexes;
@@ -90,11 +100,24 @@ javascript:(function(){
 			var rgb = regexes.rgb.exec(color);
 			hsla = rgbToHsl(rgb[1], rgb[2], rgb[3], 1);
 			console.log("rgb", rgb, hsla);
+
 		} else if (regexes.rgba.test(color)) {
 			/* rgba(255, 255, 255, 0.5) */
 			var rgba = regexes.rgba.exec(color);
 			hsla = rgbToHsl(rgba[1], rgba[2], rgba[3], rgba[4]);
 			console.log("rgba", rgba, hsla);
+
+		} else if (regexes.hex6.test(color)) {
+			var hex = regexes.hex6.exec(color);
+			hsla = rgbToHsl( parseInt(hex[1],16), parseInt(hex[2],16), parseInt(hex[3],16), 1 );
+			console.log("hex6", hex, hsla);
+
+		} else if (regexes.hex3.test(color)) {
+			var hex = regexes.hex3.exec(color);
+			hsla = rgbToHsl( parseInt(hex[1],16), parseInt(hex[2],16), parseInt(hex[3],16), 1 );
+			console.log("hex3", hex, hsla);
+		} else if (color === "transparent") {
+			hsla = [0,0,0,0];
 		}
 
 		hsla[1] = 0; /* Desaturate */
@@ -103,7 +126,8 @@ javascript:(function(){
 	}
 
 	function desaturateImage(image) {
-		var ctx = canvas.getContext('2d');
+		var canvas = document.createElement('canvas'),
+			ctx = canvas.getContext('2d');
 
 		/* Resize canvas and draw the image */
 		ctx.canvas.width = image.naturalWidth || image.offsetWidth || image.width;
