@@ -12,8 +12,7 @@ javascript:(function(){
 		"borderRightColor",
 		"borderTopColor",
 		"color",
-		"outlineColor",
-		"textUnderlineColor"
+		"outlineColor"
 	];
 	/* These are the css names for the above properties */
 	var cssPropertyNames = {
@@ -23,9 +22,10 @@ javascript:(function(){
 		"borderRightColor": "border-right-color",
 		"borderTopColor": "border-top-color",
 		"color": "color",
-		"outlineColor": "outline-color",
-		"textUnderlineColor": "text-underline-color"
+		"outlineColor": "outline-color"
 	};
+
+	var 
 
 	/* Iterate through document stylesheets */
 	var ss = document.styleSheets,
