@@ -106,8 +106,8 @@ javascript:(function(){
 		var ctx = canvas.getContext('2d');
 
 		/* Resize canvas and draw the image */
-		ctx.canvas.width = image.width;
-		ctx.canvas.height = image.height;
+		ctx.canvas.width = image.naturalWidth || image.offsetWidth || image.width;
+		ctx.canvas.height = image.naturalHeight || image.offsetHeight || image.height;
 		ctx.drawImage(image, 0, 0);
 
 		/* Get pixel data and desaturate it */
