@@ -25,21 +25,36 @@ javascript:(function(){
 		"outlineColor": "outline-color"
 	};
 
-	var regex = {
-		rgb: /rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)/,
-		rgba: new RegExp(""),
-		hsl: new RegExp(""),
-		hsla: new RegExp(""),
-		hex3: new RegExp(""),
-		hex6: new RegExp(""),
-		initial: new RegExp("initial")
-	}; // If none are matched, assume a color keyword
+	var makeRegexes = function() {
+		var hex = "[0-9a-f]",
+			rgb = "(\\d|[1-9]\\d|[12]\\d\\d)",
+			alpha = "[01]|0\\.\\d+";
+
+		var regexes = {
+			rgb: new RegExp("rgb\\(\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*\\)", "i" ),
+			rgba: new RegExp("rgba\\(\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*,\\s*" + alpha + "\\s*\\)", "i" ),
+			
+		};
+
+		return regexes;
+	};
+
+	var regexes = makeRegexes();
 
 	/**
 	 * Convert color to HSL, with a saturation of 0%
 	 */
-	var desaturate = function(color) {
+	var desaturate = function(color, regexes) {
+		/* Figure-out what kind of color this is */
+		if (regexes.rgb.test(color)) {
+			/* rgb(255, 255, 255) */
+			console.log("rgb", regexes.rgb.exec(color));
+		} else if (regexes.rgba.test(color)) {
+			/* rgba(255, 255, 255, 0.5) */
+			console.log("rgba", regexes.rgba.exec(color));
+		}
 
+		return color;
 	};
 
 	/* Iterate through document stylesheets */
@@ -77,7 +92,7 @@ javascript:(function(){
 				var selector = rule.selectorText;
 				var declaration = selector + " { ";
 					for (var prop in toAdd) {
-						var val = toAdd[prop],
+						var val = desaturate(toAdd[prop], regexes),
 							propName = cssPropertyNames[prop];
 						declaration += propName + ": " + val + "; ";
 					}
