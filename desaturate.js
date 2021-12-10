@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2012-2021, Sam Atkins <atkinssj@gmail.com>
+ *
+ * SPDX-License-Identifier: MIT
+ */
 javascript:(function(){
 	/* Check for our style tag:
 		If desaturate.js has been run already, the <style> tag will exist.
