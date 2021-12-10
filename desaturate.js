@@ -3,12 +3,12 @@
  *
  * SPDX-License-Identifier: MIT
  */
-javascript:(function(){
+function toggleDesaturate() {
 	/* Check for our style tag:
 		If desaturate.js has been run already, the <style> tag will exist.
 		In this case, delete it and reset the images.
 	*/
-	var styleElement = document.getElementById("_desaturate_js");
+	let styleElement = document.getElementById("_desaturate_js");
 	if (styleElement) {
 		styleElement.parentNode.removeChild(styleElement);
 		return;
@@ -18,10 +18,9 @@ javascript:(function(){
 	styleElement = document.createElement('style');
 	styleElement.id = "_desaturate_js";
 	document.body.appendChild( styleElement );
-	var style = document.styleSheets[document.styleSheets.length-1];
 
 	/* These are the css properties we want to adjust */
-	var colorProperties = [
+	const colorProperties = [
 		"backgroundColor",
 		"borderBottomColor",
 		"borderLeftColor",
@@ -31,7 +30,7 @@ javascript:(function(){
 		"outlineColor"
 	];
 	/* These are the css names for the above properties */
-	var cssPropertyNames = {
+	const cssPropertyNames = {
 		"backgroundColor": "background-color",
 		"borderBottomColor": "border-bottom-color",
 		"borderLeftColor": "border-left-color",
@@ -41,43 +40,33 @@ javascript:(function(){
 		"outlineColor": "outline-color"
 	};
 
-	function makeRegexes() {
-		var hex = "[0-9a-f]",
-			rgb = "(\\d|[1-9]\\d|[12]\\d\\d)",
-			alpha = "[01]|0\\.\\d+";
-
-		var regexes = {
-			rgb: new RegExp("rgb\\(\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*\\)", "i" ),
-			rgba: new RegExp("rgba\\(\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*,\\s*" + rgb + "\\s*,\\s*" + alpha + "\\s*\\)", "i" ),
-			hex6: new RegExp("#("+hex+hex+")("+hex+hex+")("+hex+hex+")", "i"),
-			hex3: new RegExp("#("+hex+")("+hex+")("+hex+")", "i")
-		};
-
-		return regexes;
+	const hex = "[0-9a-f]",
+		rgb = "(\\d|[1-9]\\d|[12]\\d\\d)",
+		alpha = "[01]|0\\.\\d+";
+	const regexes = {
+		rgb: new RegExp(`rgb\\(\\s*${rgb}\\s*,\\s*${rgb}\\s*,\\s*${rgb}\\s*\\)`, "i" ),
+		rgba: new RegExp(`rgba\\(\\s*${rgb}\\s*,\\s*${rgb}\\s*,\\s*${rgb}\\s*,\\s*${alpha}\\s*\\)`, "i" ),
+		hex6: new RegExp(`#(${hex}${hex})(${hex}${hex})(${hex}${hex})`, "i"),
+		hex3: new RegExp(`#(${hex})(${hex})(${hex})`, "i")
 	};
-	var regexes = makeRegexes();
 
 	/**
 	 * Converts an RGB color value to HSL. Conversion formula
 	 * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
 	 * Assumes r, g, and b are contained in the set [0, 255] and
 	 * returns h, s, and l as expected for css.
-	 *
-	 * @param   Number  r       The red color value
-	 * @param   Number  g       The green color value
-	 * @param   Number  b       The blue color value
-	 * @param	Number	a 		The alpha value. Not used in calculation, just returned in result.
-	 * @return  Array           The HSL representation
 	 */
 	function rgbToHsl(r, g, b, a){
-	    r /= 255, g /= 255, b /= 255;
-	    var max = Math.max(r, g, b), min = Math.min(r, g, b);
-	    var h, s, l = (max + min) / 2;
+	    r /= 255;
+		g /= 255;
+		b /= 255;
+	    let max = Math.max(r, g, b), min = Math.min(r, g, b);
+	    let h, s, l = (max + min) / 2;
 
-	    if(max == min){
+	    if(max === min){
 	        h = s = 0; /* achromatic */
 	    }else{
-	        var d = max - min;
+	        let d = max - min;
 	        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 	        switch(max){
 	            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
@@ -91,34 +80,34 @@ javascript:(function(){
 	    s *= 100;
 	    l *= 100;
 	    return [h, s, l, a];
-	};
+	}
 
 	/**
 	 * Convert color to HSL, with a saturation of 0%
 	 */
 	function desaturate(color, regexes) {
-		var hsla = [];
+		let hsla = [];
 
 		/* Figure-out what kind of color this is */
 		if (regexes.rgb.test(color)) {
 			/* rgb(255, 255, 255) */
-			var rgb = regexes.rgb.exec(color);
+			const rgb = regexes.rgb.exec(color);
 			hsla = rgbToHsl(rgb[1], rgb[2], rgb[3], 1);
 			console.log("rgb", rgb, hsla);
 
 		} else if (regexes.rgba.test(color)) {
 			/* rgba(255, 255, 255, 0.5) */
-			var rgba = regexes.rgba.exec(color);
+			const rgba = regexes.rgba.exec(color);
 			hsla = rgbToHsl(rgba[1], rgba[2], rgba[3], rgba[4]);
 			console.log("rgba", rgba, hsla);
 
 		} else if (regexes.hex6.test(color)) {
-			var hex = regexes.hex6.exec(color);
+			const hex = regexes.hex6.exec(color);
 			hsla = rgbToHsl( parseInt(hex[1],16), parseInt(hex[2],16), parseInt(hex[3],16), 1 );
 			console.log("hex6", hex, hsla);
 
 		} else if (regexes.hex3.test(color)) {
-			var hex = regexes.hex3.exec(color);
+			const hex = regexes.hex3.exec(color);
 			hsla = rgbToHsl( parseInt(hex[1],16), parseInt(hex[2],16), parseInt(hex[3],16), 1 );
 			console.log("hex3", hex, hsla);
 		} else if (color === "transparent") {
@@ -127,12 +116,12 @@ javascript:(function(){
 
 		hsla[1] = 0; /* Desaturate */
 
-		return "hsla(" + hsla[0] + ", " + hsla[1] + "%, " + hsla[2] + "%, " + hsla[3] + ")";
+		return `hsla(${hsla[0]}, ${hsla[1]}%, ${hsla[2]}%, ${hsla[3]})`;
 	}
 
 	function desaturateImage(image) {
-		var canvas = document.createElement('canvas'),
-			ctx = canvas.getContext('2d');
+		let canvas = document.createElement('canvas');
+		let ctx = canvas.getContext('2d');
 
 		/* Resize canvas and draw the image */
 		ctx.canvas.width = image.naturalWidth || image.offsetWidth || image.width;
@@ -140,12 +129,12 @@ javascript:(function(){
 		ctx.drawImage(image, 0, 0);
 
 		/* Get pixel data and desaturate it */
-		var pixels = ctx.getImageData(0, 0, image.width, image.height);
-		for (var i=0, n = pixels.data.length; i < n; i+=4) {
-			var intensity = 0.3 * pixels.data[i+0]
+		let pixels = ctx.getImageData(0, 0, image.width, image.height);
+		for (let i=0, n = pixels.data.length; i < n; i+=4) {
+			let intensity = 0.3 * pixels.data[i]
 							+ 0.59 * pixels.data[i+1]
 							+ 0.11 * pixels.data[i+2];
-			pixels.data[i+0] = intensity;
+			pixels.data[i] = intensity;
 			pixels.data[i+1] = intensity;
 			pixels.data[i+2] = intensity;
 		}
@@ -157,19 +146,19 @@ javascript:(function(){
 
 	function handleRules(cssRulesList) {
 		/* Iterate through style rules */
-		for (var j=0; j<cssRulesList.length; j++) {
-			var rule = cssRulesList[j],
-				toAdd = {},
-				toAddLength = 0;
+		for (let j=0; j<cssRulesList.length; j++) {
+			let rule = cssRulesList[j];
+			let toAdd = {};
+			let toAddLength = 0;
 
 			/* If rule is a CSSMediaRule, we need to get its innards. */
-			if (rule.constructor.name == "CSSMediaRule") {
+			if (rule.constructor.name === "CSSMediaRule") {
 				handleRules(rule.cssRules);
 				continue;
 			}
 
 			/* For each of the 'colorProperties', see if it's here */
-			for (var k=0; k<colorProperties.length; k++) {
+			for (let k=0; k<colorProperties.length; k++) {
 				if (rule.style[colorProperties[k]] !== "") {
 					/* Add this rule to the thing! */
 					toAdd[colorProperties[k]] = rule.style[colorProperties[k]];
@@ -179,23 +168,22 @@ javascript:(function(){
 
 			/* If any of the declarations were relevant, adjust them and add them to our style object */
 			if (toAddLength) {
-				var selector = rule.selectorText;
-				var declaration = selector + " { ";
-					for (var prop in toAdd) {
-						var val = desaturate(toAdd[prop], regexes),
-							propName = cssPropertyNames[prop];
-						declaration += propName + ": " + val + "; ";
+				let selector = rule.selectorText;
+				let declaration = selector + " { ";
+					for (let prop in toAdd) {
+						let val = desaturate(toAdd[prop], regexes);
+						let propName = cssPropertyNames[prop];
+						declaration += `${propName}: ${val}; `;
 					}
 				declaration += " } \n";
-				/*style.insertRule(declaration, style.cssRules.length);*/
 				styleElement.innerHTML += declaration;
 			}
 		}
 	}
 
 	/* Iterate through document stylesheets */
-	var ss = document.styleSheets;
-	for (var i=0; i<(ss.length-1); i++) {
+	let ss = document.styleSheets;
+	for (let i=0; i<(ss.length-1); i++) {
 		console.log(i, ss[i].href);
 
 		/* If there are no style rules, skip this sheet */
@@ -208,12 +196,12 @@ javascript:(function(){
 	}
 
 	/* Iterate through document images */
-	for (var i=0; i < document.images.length; i++) {
+	for (let i=0; i < document.images.length; i++) {
 		try {
 			desaturateImage(document.images[i]);
 		} catch (e) {
-			console.log(e);
+			console.error(e);
 		}
 	}
-
-})();
+}
+toggleDesaturate();
